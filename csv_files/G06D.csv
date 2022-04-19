@@ -1,0 +1,3 @@
+"cpc_code","title","title_cpc_codes","informative_references","informative_references_cpc_codes","special_rules","special_rules_cpc_codes","glossary_of_terms","definition_statement"
+"G06D","DIGITAL FLUID-PRESSURE COMPUTING DEVICES","","","","","","","This place covers: All devices in which at least one computing function is performed by hydraulic or pneumatic means. Fluid computers."
+"G06D1/00","Details, e.g. functional units  (individual logic elements F15C; valves F16K)","F15C|F16K","","","","","",""

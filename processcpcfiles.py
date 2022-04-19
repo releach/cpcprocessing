@@ -1,5 +1,6 @@
 #!/usr/bin/python3.5
 
+#releach - made some tweaks to original script to accommodate changed directory structure. Added 'definition' to the output. 
 #Author:        Sasan Bahadaran
 #Date:          3/31/17
 #Organization:  Commerce Data Service
@@ -8,7 +9,10 @@
 # in order to output cpc codes and related information into a structured csv file.
 
 
-import sys, os, csv
+import csv
+import os
+import sys
+
 from lxml import etree
 
 
@@ -36,8 +40,10 @@ def parseXML(filetoproc):
             cpc_content.append(special_rules_cpc_codes)
             glossary_of_terms = ''.join(item.xpath('glossary-of-terms/section-body/table/table-row/table-column//paragraph-text/text()'))
             cpc_content.append(glossary_of_terms)
+            definition_statement = ' '.join(item.xpath('definition-statement/section-body//paragraph-text/text()'))
+            cpc_content.append(definition_statement)
             doccontent.append(cpc_content)
-        return doccontent 
+        return doccontent
     except IOError as e:
         print('I/O error({0}): {1}'.format(e.errno,e.strerror))
 
@@ -50,7 +56,7 @@ def writeResults(content, fname):
                 writer = csv.writer(outfile, quoting=csv.QUOTE_ALL)
                 writer.writerow(('cpc_code', 'title', 'title_cpc_codes', 'informative_references', \
                         'informative_references_cpc_codes', 'special_rules', 'special_rules_cpc_codes',\
-                        'glossary_of_terms'))
+                        'glossary_of_terms', 'definition_statement'))
                 writer.writerows(content)
     except IOError as e:
         print('I/O error({0}): {1}'.format(e.errno,e.strerror))
@@ -62,17 +68,15 @@ def changeExt(fname, ext):
 
 if __name__ == '__main__':
     scriptpath = os.path.dirname(os.path.abspath(__file__))
-    for fdir in os.listdir(os.path.join(scriptpath, 'xml_files')):
-        if os.path.isdir(os.path.join(scriptpath, 'xml_files', fdir)):
-            print(fdir)
-            for filename in os.listdir(os.path.join(scriptpath, 'xml_files', fdir)):
-                if filename.endswith('.xml'):
-                    fname = os.path.join(scriptpath, 'xml_files', fdir, filename)
-                    print('FILE: {}'.format(fname))
-                    output_fname = os.path.join(scriptpath, 'xml_files', fdir, (os.path.basename(fname)).split('-')[2]) 
-                    output_fname = changeExt(output_fname, 'csv')
-                    if (os.path.isfile(output_fname)):
-                        print('FILE: {} already exists!'.format(output_fname))
-                    else:
-                        content = parseXML(fname)
-                        writeResults(content, output_fname)
+
+    for filename in os.listdir(os.path.join(scriptpath, 'xml_files')):
+        if filename.endswith('.xml'):
+            fname = os.path.join(scriptpath, 'xml_files', filename)
+            print('FILE: {}'.format(fname))
+            output_fname = os.path.join(scriptpath, 'xml_files', (os.path.basename(fname)).split('-')[2])
+            output_fname = changeExt(output_fname, 'csv')
+            if (os.path.isfile(output_fname)):
+                print('FILE: {} already exists!'.format(output_fname))
+            else:
+                content = parseXML(fname)
+                writeResults(content, output_fname)
